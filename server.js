@@ -36,7 +36,7 @@ const resizeImage = (imagePath, paramWidth, paramHeight) => {
       if (!paramWidth) {
         adjustedWidth = Math.round((imageWidth / imageHeight) * adjustedHeight);
       } else {
-        adjustedWidth = paramWidth;
+        adjustedWidth = parseInt(paramWidth);
       }
       const canvas = createCanvas(imageWidth, imageHeight);
       const ctx = canvas.getContext('2d');
@@ -92,9 +92,7 @@ app.get("/images/:imageUIDPath", function (req, res) {
     });
 });
 
-
-
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(9001 || process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
