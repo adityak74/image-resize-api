@@ -83,8 +83,7 @@ app.get("/images/:imageUIDPath", function (req, res) {
         imageFile.on('finish', async () => {
           console.log('imageFile.on finish');
           const imageData = await resizeImage(imageTempPath, w, h);
-          console.log('imageData', imageData);
-          // fs.unlink(imageTempPath, () => {});
+          fs.unlink(imageTempPath, () => {});
           res.set("Content-Type", "text/html");
           return res.status(200).send(`<html><body><img src="${imageData}" /></body></html>`);
         });
