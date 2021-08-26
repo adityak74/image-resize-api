@@ -42,9 +42,9 @@ const resizeImage = (imagePath, paramWidth, paramHeight) => {
       const canvas = createCanvas(imageWidth, imageHeight);
       const ctx = canvas.getContext('2d');
       ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
-      const copyCanvas = createCanvas(600, 400);
+      const copyCanvas = createCanvas(adjustedWidth, adjustedHeight);
       const copyCtx = copyCanvas.getContext('2d');
-      copyCtx.drawImage(canvas, 0, 0, imageWidth, imageHeight, 0, 0, 600, 400);
+      copyCtx.drawImage(canvas, 0, 0, imageWidth, imageHeight, 0, 0, adjustedWidth, adjustedHeight);
       console.log('resized to', canvas.height, canvas.width);
       console.log('resized to', copyCanvas.height, copyCanvas.width);
       const data = copyCanvas.toDataURL('image/jpeg');
