@@ -1,10 +1,10 @@
 {
-	"name": "request_header",
+	"name": "image-resize-api",
 	"version": "0.0.1",
-	"description": "API project for freeCodeCamp",
+	"description": "API project for Makerspace Interview",
 	"main": "server.js",
 	"scripts": {
-		"start": "nodemon server.js"
+		"start": "node server.js"
 	},
 	"dependencies": {
 		"canvas": "^2.8.0",

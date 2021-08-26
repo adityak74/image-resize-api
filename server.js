@@ -20,7 +20,11 @@ const imageBaseUrl = 'https://s3-us-west-2.amazonaws.com/makersdistillery/1000x/
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
-const resizeImage = (imageUIDPath, imagePath, paramWidth, paramHeight) => {
+app.get('/', function(req, res) {
+  res.sendFile(__dirname + '/views/index.html');
+});
+
+const resizeImage = (imagePath, paramWidth, paramHeight) => {
   console.log('resizeImage', imagePath, paramWidth, paramHeight);
   return new Promise((resolve, reject) => {
     loadImage(imagePath).then(image => {
@@ -75,13 +79,13 @@ app.get("/images/:imageUIDPath", function (req, res) {
           res.set("Content-Type", "image/jpeg");
           return res.status(200).send(response.body);
         }
-        const imageTempPath = path.join(__dirname, 'temp', imageUIDPath);
+        const imageTempPath = path.join(__dirname, imageUIDPath);
         const imageFile = fs.createWriteStream(imageTempPath);
         imageFile.write(response.body);
         imageFile.end();
         imageFile.on('finish', async () => {
           console.log('imageFile.on finish');
-          const imageData = await resizeImage(imageUIDPath, imageTempPath, w, h);
+          const imageData = await resizeImage(imageTempPath, w, h);
           console.log('imageData', imageData);
           // fs.unlink(imageTempPath, () => {});
           res.set("Content-Type", "text/html");
@@ -94,6 +98,6 @@ app.get("/images/:imageUIDPath", function (req, res) {
 
 
 // listen for requests :)
-var listener = app.listen(9001, function () {
+var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
