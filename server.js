@@ -28,11 +28,10 @@ const resizeImage = (imagePath, paramWidth, paramHeight) => {
   console.log('resizeImage', imagePath, paramWidth, paramHeight);
   return new Promise((resolve, reject) => {
     loadImage(imagePath).then(image => {
-      console.log('image loaded', image);
       const imageWidth = image.width;
       const imageHeight = image.height;
       const aspectRatio = imageHeight > imageWidth ? imageHeight / imageWidth : imageWidth / imageHeight;
-      const adjustedHeight = paramHeight || paramWidth * aspectRatio;
+      const adjustedHeight = parseInt(paramHeight || paramWidth * aspectRatio);
       let adjustedWidth;
       if (!paramWidth) {
         adjustedWidth = Math.round((imageWidth / imageHeight) * adjustedHeight);
@@ -45,8 +44,6 @@ const resizeImage = (imagePath, paramWidth, paramHeight) => {
       const copyCanvas = createCanvas(adjustedWidth, adjustedHeight);
       const copyCtx = copyCanvas.getContext('2d');
       copyCtx.drawImage(canvas, 0, 0, imageWidth, imageHeight, 0, 0, adjustedWidth, adjustedHeight);
-      console.log('resized to', canvas.height, canvas.width);
-      console.log('resized to', copyCanvas.height, copyCanvas.width);
       const data = copyCanvas.toDataURL('image/jpeg');
       resolve(data);
     }).catch(err => {
