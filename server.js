@@ -24,20 +24,26 @@ const resizeImage = (imageUIDPath, imagePath, paramWidth, paramHeight) => {
   console.log('resizeImage', imagePath, paramWidth, paramHeight);
   return new Promise((resolve, reject) => {
     loadImage(imagePath).then(image => {
+      console.log('image loaded', image);
       const imageWidth = image.width;
       const imageHeight = image.height;
-      const aspectRatio = imageHeight / imageWidth;
+      const aspectRatio = imageHeight > imageWidth ? imageHeight / imageWidth : imageWidth / imageHeight;
       const adjustedHeight = paramHeight || paramWidth * aspectRatio;
       let adjustedWidth;
       if (!paramWidth) {
-        adjustedWidth = (imageWidth / imageHeight) * adjustedHeight;
+        adjustedWidth = Math.round((imageWidth / imageHeight) * adjustedHeight);
       } else {
         adjustedWidth = paramWidth;
       }
       const canvas = createCanvas(imageWidth, imageHeight);
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0, imageWidth, imageHeight, 0, 0, adjustedWidth, adjustedHeight);
-      const data = canvas.toDataURL('image/jpeg');
+      ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+      const copyCanvas = createCanvas(600, 400);
+      const copyCtx = copyCanvas.getContext('2d');
+      copyCtx.drawImage(canvas, 0, 0, imageWidth, imageHeight, 0, 0, 600, 400);
+      console.log('resized to', canvas.height, canvas.width);
+      console.log('resized to', copyCanvas.height, copyCanvas.width);
+      const data = copyCanvas.toDataURL('image/jpeg');
       resolve(data);
     }).catch(err => {
       console.log('resizeImage error', err);
@@ -70,12 +76,17 @@ app.get("/images/:imageUIDPath", function (req, res) {
           return res.status(200).send(response.body);
         }
         const imageTempPath = path.join(__dirname, 'temp', imageUIDPath);
-        fs.createWriteStream(imageTempPath).write(response.body);
-        const base64ImageString = await resizeImage(imageUIDPath, imageTempPath, w, h);
-        console.log('base64ImageString', base64ImageString);
-        res.set("Content-Type", "image/jpeg");
-        return res.status(200).send(base64ImageString);
-        // fs.unlink(imageTempPath, () => {});
+        const imageFile = fs.createWriteStream(imageTempPath);
+        imageFile.write(response.body);
+        imageFile.end();
+        imageFile.on('finish', async () => {
+          console.log('imageFile.on finish');
+          const imageData = await resizeImage(imageUIDPath, imageTempPath, w, h);
+          console.log('imageData', imageData);
+          // fs.unlink(imageTempPath, () => {});
+          res.set("Content-Type", "text/html");
+          return res.status(200).send(`<html><body><img src="${imageData}" /></body></html>`);
+        });
       }
     });
 });
