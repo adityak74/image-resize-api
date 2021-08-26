@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-const resizeImage = (imagePath, paramWidth, paramHeight) => {
+const resizeImage = (imagePath, paramWidth, paramHeight, paramFormat, paramRotate) => {
   console.log('resizeImage', imagePath, paramWidth, paramHeight);
   return new Promise((resolve, reject) => {
     loadImage(imagePath).then(image => {
@@ -44,6 +44,17 @@ const resizeImage = (imagePath, paramWidth, paramHeight) => {
       const copyCanvas = createCanvas(adjustedWidth, adjustedHeight);
       const copyCtx = copyCanvas.getContext('2d');
       copyCtx.drawImage(canvas, 0, 0, imageWidth, imageHeight, 0, 0, adjustedWidth, adjustedHeight);
+      // apply rotation if needed
+      if (parseInt(paramRotate)) {
+        const toRotate = parseInt(paramRotate) * Math.PI / 180;
+        const rotateCanvas = createCanvas(adjustedWidth, adjustedHeight);
+        const rotateCtx = rotateCanvas.getContext('2d');
+        rotateCtx.translate(adjustedWidth / 2, adjustedHeight / 2);
+        rotateCtx.rotate(toRotate);
+        rotateCtx.drawImage(copyCanvas, -adjustedWidth / 2, -adjustedHeight / 2);
+        return resolve(rotateCanvas.toDataURL('image/jpeg'));
+      }
+      // save the image
       const data = copyCanvas.toDataURL('image/jpeg');
       resolve(data);
     }).catch(err => {
@@ -66,7 +77,7 @@ app.get("/images/:imageUIDPath", function (req, res) {
         console.log(error);
         res.status(500).send(error);
       } else {
-        const { h, w, format } = req.query;
+        const { h, w, format, rotate } = req.query;
         if ((h && isNaN(h)) || (w && isNaN(w))) {
           return res.status(400).send({
             error: 'h/w must be a number'
@@ -82,7 +93,7 @@ app.get("/images/:imageUIDPath", function (req, res) {
         imageFile.end();
         imageFile.on('finish', async () => {
           console.log('imageFile.on finish');
-          const imageData = await resizeImage(imageTempPath, w, h);
+          const imageData = await resizeImage(imageTempPath, w, h, format, rotate);
           fs.unlink(imageTempPath, () => {});
           res.set("Content-Type", "text/html");
           return res.status(200).send(`<html><body><img src="${imageData}" /></body></html>`);
@@ -93,6 +104,6 @@ app.get("/images/:imageUIDPath", function (req, res) {
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(9001 || process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
