@@ -3,7 +3,7 @@
 <html>
 
    <head>
-      <title>Request Header Parser</title>
+      <title>Image Resize Service</title>
       <link rel="shortcut icon" href="https://cdn.hyperdev.com/us-east-1%3A52a203ff-088b-420f-81be-45bf559d01b1%2Ffavicon.ico" type="image/x-icon"/>
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
       <link href="style.css" rel="stylesheet" type="text/css">
@@ -11,21 +11,22 @@
 
    <body>
       <div class="container">
-        <h2>Request Header Parser Microservice</h2>
+        <h2>Image Resize Microservice</h2>
 
         <h3>Example Usage:</h3>
+        <p> This is only for images hosted on the path <code>https://s3-us-west-2.amazonaws.com/makersdistillery/1000x/</code> </p> 
         <p>
-          <a href="api/whoami">[base url]/api/whoami</a>
+          <a href="api/whoami">[base url]/images/:imageUIDPath</a>
         </p>
 
         <h3>Example Output:</h3>
         <p>
-          <code>{"ipaddress":"::ffff:159.20.14.100","language":"en-US,en;q=0.5",<br>"software":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"}</code>
+          <code>The resized image</code>
         </p>
       </div>
       <div class="footer">
         <p>
-          by <a href="https://www.freecodecamp.org">freeCodeCamp</a>
+          by <a href="https://www.freecodecamp.org">Aditya Karnam</a>
         </p>
       </div>
    </body>
