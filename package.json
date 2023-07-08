@@ -12,7 +12,7 @@
 		"cors": "^2.8.1",
 		"dotenv": "^10.0.0",
 		"express": "^5.0.0-alpha.2",
-		"nodemon": "^2.0.12",
+		"nodemon": "^3.0.0",
 		"superagent": "^6.1.0"
 	},
 	"repository": {
